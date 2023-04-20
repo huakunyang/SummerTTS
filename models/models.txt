@@ -1,0 +1,12 @@
+请在如下百度网盘中下载模型并放入此目录中：
+
+链接: https://pan.baidu.com/s/15YivI-HfopuOfx3evZUj-g?pwd=vzjb 提取码: vzjb
+
+  models/
+  ├── multi_speaker_big.bin
+  ├── multi_speaker_small.bin
+  ├── multi_speker_medium.bin
+  ├── single_speaker_big.bin
+  ├── single_speaker_medium.bin
+  └── single_speaker_small.bin
+

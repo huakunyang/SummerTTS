@@ -1,0 +1,10 @@
+在本目录，执行以下命令：  
+
+cmake ..  
+make
+
+编译完成后，执行下面的命令测试，需要提前从网盘下载模型到 ../models中：
+
+./tts_test ../test.txt ../models/single_speaker_small.bin out.wav
+
+

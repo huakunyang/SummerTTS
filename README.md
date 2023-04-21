@@ -3,7 +3,7 @@
 # 说明
 - SummerTTS 是一个独立编译的语音合成程序(TTS)。
 - SummerTTS 的底层计算库使用Eigen，Eigen是一套模板定义的函数，大部分情况下，只需要包含头文件即可，所以本项目基本上没有其他依赖，在C++环境下可以独立编译和运行。
-- 本项目使用Eigen提供的矩阵库实现了神经网络的算子，不需要依赖其他NN运行环境，例如pytorch，tensorflow 等。
+- 本项目使用Eigen提供的矩阵库实现了神经网络的算子，不需要依赖例如pytorch，tensorflow, ncnn 等其他NN运行环境。
 - 本项目在 Ubuntu 上编译运行通过，其他类Linux平台，如Android，树莓派等，也应该没啥大问题，在Window上没有测试过，可能需要少许改动。
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
@@ -55,6 +55,7 @@
 - Eigen  
 - vits (https://github.com/jaywalnut310/vits)  
 - vits_chinese (https://github.com/UEhQZXI/vits_chinese)  
+- 汉字转拼音（https://github.com/yangyangwithgnu/hanz2piny）
 - 本项目的单说话人模型基于开源标贝数据集训练，多说话人模型基于开源数据集 aishell3 训练  
 
 

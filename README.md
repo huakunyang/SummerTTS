@@ -20,7 +20,9 @@
   ├── multi_speker_medium.bin  
   ├── single_speaker_big.bin  
   ├── single_speaker_medium.bin  
-  └── single_speaker_small.bin  
+  ├── single_speaker_small.bin  
+  └── single_speaker_tiny.bin  
+  
 
 - 进入Build 目录，执行以下命令：  
   cmake ..  
@@ -31,7 +33,7 @@
 
   该命令行中：  
   第一个参数为是文本文件的路径，该文件包含需要被合成语音的文本。  
-  第二个参数是前面提到的模型的路径，文件名开头的single 和 multi 表示模型包含了单个说话人还是多个说话人。文件名结尾的big， medium， small 等分别表示模型的大小，模型越大，需要的计算量和内存越多，合成需要的时间越长，但合成的语音的质量效果越好。  
+  第二个参数是前面提到的模型的路径，文件名开头的single 和 multi 表示模型包含了单个说话人还是多个说话人。文件名结尾的big， medium， small 等分别表示模型的大小，模型越大，需要的计算量和内存越多，合成需要的时间越长，但合成的语音的质量效果越好。推荐单说话人模型：single_speaker_tiny.bin, 合成的速度较快，合成的音质也还行。大模型：single_speaker_big.bin 和 multi_speaker_big.bin 可能会非常慢。  
   第三个参数是合成的音频文件，程序运行完之后生成该文件，可以用播放器打开。
     
 - 以上的测试程序实现在 test/main.cpp 中，具体合成的接口定义在 include/SynthesizerTrn.h， 如下：  

@@ -96,7 +96,7 @@ int main(int argc, char ** argv)
     int32_t modelSize = ttsLoadModel(argv[2],&dataW);
 
     SynthesizerTrn * synthesizer = new SynthesizerTrn(dataW);
-    
+
     int32_t spkNum = synthesizer->getSpeakerNum();
     
     printf("Available speakers in the model are %d\n",spkNum);
@@ -126,7 +126,7 @@ int main(int argc, char ** argv)
     else
     {
         int32_t retLen = 0;
-        int16_t * wavData = synthesizer->infer(line,0, 1.1,retLen);
+        int16_t * wavData = synthesizer->infer(line,0, 1.0,retLen);
 
         char * dataForFile = new char[retLen*sizeof(int16_t)+44];
         convertAudioToWavBuf(dataForFile, (char *)wavData, retLen*sizeof(int16_t));
@@ -137,6 +137,7 @@ int main(int argc, char ** argv)
         tts_free_data(wavData);
     }
         
+    delete synthesizer;
     tts_free_data(dataW);
 
     return 0;

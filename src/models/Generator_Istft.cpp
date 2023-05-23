@@ -1,16 +1,21 @@
-#include "Generator.h"
+#include "Generator_Istft.h"
 #include "tts_logger.h"
 #include "nn_conv1d.h"
 #include "nn_conv1d_transposed.h"
 #include "ResBlock1.h"
 #include "nn_leaky_relu.h"
 #include "nn_tanh.h"
+#include "iStft.h"
+#include <vector>
 
 using Eigen::Map;
 
 typedef struct
 {
     int32_t isMS_;
+    int32_t subBands_;
+    int32_t gen_istft_n_fft_;
+    int32_t gen_istft_hop_size_;
     int32_t upSampleRatesNum_;
     int32_t * upSampleRatesList_;
     int32_t upsample_initial_channel_;
@@ -24,14 +29,14 @@ typedef struct
     nn_conv1d * conv_pre_;
     nn_conv1d_transposed **upList_;
     ResBlock1 ** resBlockList_;
-    nn_conv1d * conv_post_;
-    nn_conv1d * cond_;
+    nn_conv1d * subband_conv_post_;
+    iStft * istft_;
     EIGEN_MAKE_ALIGNED_OPERATOR_NEW
-}GENERATOR_DATA_t;
+}GENERATOR_ISTFT_DATA_t;
 
-Generator::Generator(float * modelData, int32_t & offset,int32_t isMS)
+Generator_Istft::Generator_Istft(float * modelData, int32_t & offset,int32_t isMS)
 {
-    GENERATOR_DATA_t * generatorData = new GENERATOR_DATA_t();
+    GENERATOR_ISTFT_DATA_t * generatorData = new GENERATOR_ISTFT_DATA_t();
     if(NULL == generatorData)
     {
         tts_log(TTS_LOG_ERROR, "Generator: Failed to allocate memory for internal data block\n");
@@ -39,8 +44,11 @@ Generator::Generator(float * modelData, int32_t & offset,int32_t isMS)
     }
 
     int32_t curOffset = offset;
-    
+
     generatorData->isMS_ = isMS;
+    generatorData->subBands_=(int32_t)modelData[curOffset++];
+    generatorData->gen_istft_n_fft_ =(int32_t)modelData[curOffset++];
+    generatorData->gen_istft_hop_size_=(int32_t)modelData[curOffset++];
     generatorData->upSampleRatesNum_=(int32_t)modelData[curOffset++];
     generatorData->upSampleRatesList_ = new int32_t[generatorData->upSampleRatesNum_];
     for(int32_t i = 0; i<generatorData->upSampleRatesNum_; i++)
@@ -92,22 +100,27 @@ Generator::Generator(float * modelData, int32_t & offset,int32_t isMS)
             generatorData->resBlockList_[i*generatorData->resBlocKernelSizeNum_+j] = new ResBlock1(modelData,curOffset);
         }
     }
+    
+    MatrixXf upDownKernelWeight = MatrixXf::Zero(generatorData->subBands_, 
+                                                 generatorData->subBands_*
+                                                 generatorData->subBands_);
 
-    generatorData->conv_post_ = new nn_conv1d(modelData, curOffset); 
-    generatorData->cond_ = NULL;
-    if(generatorData->isMS_== 1)
+    for(int i = 0; i<generatorData->subBands_; i++)
     {
-        generatorData->cond_ = new nn_conv1d(modelData, curOffset);
+        upDownKernelWeight(i,i*4) = generatorData->subBands_;    
     }
 
+    generatorData->subband_conv_post_ = new nn_conv1d(modelData, curOffset); 
+    generatorData->istft_ = new iStft(16,4,16);
+    
     offset = curOffset;
     priv_ = (void *)generatorData;
 
 }
 
-Generator::~Generator()
+Generator_Istft::~Generator_Istft()
 {
-    GENERATOR_DATA_t * generatorData = (GENERATOR_DATA_t *)priv_;
+    GENERATOR_ISTFT_DATA_t * generatorData = (GENERATOR_ISTFT_DATA_t *)priv_;
     delete [] generatorData->upSampleRatesList_;
     delete [] generatorData->upSampleKernelSizesList_;
     delete [] generatorData->resBlockKernelSizeList_;
@@ -127,27 +140,19 @@ Generator::~Generator()
     }
     free(generatorData->resBlockList_);
 
-    if(generatorData->isMS_== 1)
-    {
-        delete generatorData->cond_;
-    }
-    delete generatorData->conv_post_;
-    
+    delete generatorData->subband_conv_post_;
+    delete generatorData->istft_;
+
     delete generatorData;
 }
 
-MatrixXf Generator::forward(const MatrixXf & x, const MatrixXf & g)
+MatrixXf Generator_Istft::forward(const MatrixXf & x, const MatrixXf & g)
 {
-    GENERATOR_DATA_t * generatorData = (GENERATOR_DATA_t *)priv_;
+    GENERATOR_ISTFT_DATA_t * generatorData = (GENERATOR_ISTFT_DATA_t *)priv_;
+    
+    MatrixXf xx = x;
 
-    MatrixXf xx = generatorData->conv_pre_->forward(x);
-
-    MatrixXf gg;
-    if(generatorData->isMS_== 1)
-    {
-        gg = generatorData->cond_->forward(g);
-        xx = xx.rowwise() + gg.row(0);
-    }
+    xx = generatorData->conv_pre_->forward(xx);
 
     for(int32_t i = 0; i<generatorData->upSampleRatesNum_; i++)
     {
@@ -171,12 +176,23 @@ MatrixXf Generator::forward(const MatrixXf & x, const MatrixXf & g)
 
         }
         xx = xs.array()/(float)(generatorData->resBlocKernelSizeNum_);
+    }
+    xx = nn_leaky_relu(xx);
+    
+    MatrixXf xx_refpad = MatrixXf::Zero(xx.rows()+1,xx.cols());
+    xx_refpad.block(1,0,xx.rows(),xx.cols()) = xx;
 
+    if(xx.rows() > 1)
+    {
+        xx_refpad.row(0) = xx.row(1);
     }
 
-    xx = nn_leaky_relu(xx);
-    xx = generatorData->conv_post_->forward(xx);
-    xx = nn_tanh(xx);
+    xx = generatorData->subband_conv_post_->forward(xx_refpad);
+    int32_t halfSubBandCols = generatorData->gen_istft_n_fft_/2+1;
 
+    MatrixXf sub1 = xx.block(0,0,xx.rows(),halfSubBandCols);
+    MatrixXf sub2 = xx.block(0,halfSubBandCols,xx.rows(),halfSubBandCols);
+    xx = generatorData->istft_->forward((sub1.array().exp()).matrix(),
+                                        ((sub2.array().sin())*M_PI).matrix()); 
     return xx;
 }

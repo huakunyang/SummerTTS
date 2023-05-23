@@ -60,6 +60,7 @@ multi_head_attention::multi_head_attention(float * modelData, int32_t & offset)
     }
 
     multiAttnData->q_ = new nn_conv1d(modelData, curOffset);
+
     if(NULL == multiAttnData->q_)
     {
         tts_log(TTS_LOG_ERROR, "Module Multi Attn: Failed to init q_\n");

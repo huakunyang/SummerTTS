@@ -29,6 +29,8 @@ add_executable(tts_test
                ./src/platform/tts_file_io.cpp
                ./src/platform/tts_logger.cpp
                ./src/utils/utils.cpp
+               ./src/modules/iStft.cpp
+               ./src/modules/hann.cpp
                ./src/modules/attention_encoder.cpp
                ./src/modules/multi_head_attention.cpp
                ./src/modules/ffn.cpp
@@ -39,10 +41,17 @@ add_executable(tts_test
                ./src/modules/ResidualCouplingLayer.cpp
                ./src/modules/ResBlock1.cpp
                ./src/modules/WN.cpp
+               ./src/modules/pqmf.cpp
                ./src/models/TextEncoder.cpp
                ./src/models/StochasticDurationPredictor.cpp
+               ./src/models/FixDurationPredictor.cpp
+               ./src/models/DurationPredictor_base.cpp
                ./src/models/ResidualCouplingBlock.cpp
-               ./src/models/Generator.cpp
+               ./src/models/Generator_base.cpp
+               ./src/models/Generator_hifigan.cpp
+               ./src/models/Generator_MS.cpp
+               ./src/models/Generator_Istft.cpp
+               ./src/models/Generator_MBB.cpp
                ./src/models/SynthesizerTrn.cpp)
 
 target_include_directories(tts_test PUBLIC ./eigen-3.4.0

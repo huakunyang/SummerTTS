@@ -32,10 +32,12 @@ TextEncoder::TextEncoder(float * modelData, int32_t & offset)
     textEncoderData->hiddenChannels_ = (int32_t)modelData[curOffset++];
     textEncoderData->vocabSize_ = (int32_t)modelData[curOffset++];
     textEncoderData->embSize_ = (int32_t)modelData[curOffset++];
+
     textEncoderData->emb_ = Map<MatrixXf>(modelData+curOffset,
                                           textEncoderData->vocabSize_, 
                                           textEncoderData->embSize_);
     
+
     curOffset = curOffset + textEncoderData->vocabSize_*textEncoderData->embSize_;
 
     textEncoderData->encoder_ = new attention_encoder(modelData,curOffset);

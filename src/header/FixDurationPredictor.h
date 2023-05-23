@@ -1,5 +1,5 @@
-#ifndef _STOCH_DUR_PRED_H_
-#define _STOCH_DUR_PRED_H_
+#ifndef _FIX_DUR_PRED_H_
+#define _FIX_DUR_PRED_H_
 
 #include "DurationPredictor_base.h"
 #include "stdint.h"
@@ -7,11 +7,11 @@
 
 using Eigen::MatrixXf;
 
-class StochasticDurationPredictor : public DurationPredictor_base
+class FixDurationPredictor : public DurationPredictor_base
 {
 public:
-    StochasticDurationPredictor(float * modelData, int32_t & offset,int32_t isMS);
-    ~StochasticDurationPredictor();
+    FixDurationPredictor(float * modelData, int32_t & offset,int32_t isMS);
+    ~FixDurationPredictor();
     MatrixXf forward(const MatrixXf & x,const MatrixXf & g, float noiseScale);
     void setMSSpk(int32_t isMS, int32_t ginChannels);
 

@@ -7,21 +7,22 @@
 - 本项目在 Ubuntu 上编译运行通过，其他类Linux平台，如Android，树莓派等，也应该没啥大问题，在Window上没有测试过，可能需要少许改动。
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
+# 更新日志
+- 2023-5-23： 使用新的算法大幅度提升了单说话人的语音合成速度， 需要在下面的百度网盘中获取新的模型，使用 single_speaker_fast.bin， 语音合成的速度有了大幅度提升，注意之前的模型不能用在这个版本的代码中，下列模型也不能用于之前版本的代码。
+  链接: https://pan.baidu.com/s/1yDtOfMHwslDgVNZ1d9_kgw?pwd=berp 提取码: berp
+
+- 2023-4-21： 初始创建
+
+
 # 使用说明
 - 将本项目的代码克隆到本地，最好是Ubuntu Linux 环境
 - 从以下的百度网盘地址下载模型，放入本项目的model目录中：
-
-  链接: https://pan.baidu.com/s/15YivI-HfopuOfx3evZUj-g?pwd=vzjb 提取码: vzjb     
-  
+  链接: https://pan.baidu.com/s/1yDtOfMHwslDgVNZ1d9_kgw?pwd=berp 提取码: berp
+    
   模型文件放入后，models目录结构如下：    
   models/  
-  ├── multi_speaker_big.bin  
-  ├── multi_speaker_small.bin  
-  ├── multi_speker_medium.bin  
-  ├── single_speaker_big.bin  
-  ├── single_speaker_medium.bin  
-  ├── single_speaker_small.bin  
-  └── single_speaker_tiny.bin  
+  ├── multi_speakers.bin  
+  └── single_speaker_fast.bin  
   
 
 - 进入Build 目录，执行以下命令：  
@@ -29,11 +30,11 @@
   make  
 - 编译完成后，会在Build 目录中生成 tts_test 执行程序  
 - 运行下列命令，测试语音合成（TTS）：  
-  ./tts_test ../test.txt ../models/single_speaker_small.bin out.wav   
+  ./tts_test ../test.txt ../models/single_speaker_fast.bin out.wav   
 
   该命令行中：  
   第一个参数为是文本文件的路径，该文件包含需要被合成语音的文本。  
-  第二个参数是前面提到的模型的路径，文件名开头的single 和 multi 表示模型包含了单个说话人还是多个说话人。文件名结尾的big， medium， small 等分别表示模型的大小，模型越大，需要的计算量和内存越多，合成需要的时间越长，但合成的语音的质量效果越好。推荐单说话人模型：single_speaker_tiny.bin, 合成的速度较快，合成的音质也还行。大模型：single_speaker_big.bin 和 multi_speaker_big.bin 可能会非常慢。  
+  第二个参数是前面提到的模型的路径，文件名开头的single 和 multi 表示模型包含了单个说话人还是多个说话人。推荐单说话人模型：single_speaker_fast.bin, 合成的速度较快，合成的音质也还行。
   第三个参数是合成的音频文件，程序运行完之后生成该文件，可以用播放器打开。
     
 - 以上的测试程序实现在 test/main.cpp 中，具体合成的接口定义在 include/SynthesizerTrn.h， 如下：  

@@ -10,6 +10,29 @@ set(CMAKE_C_FLAGS " -O3 -fopenmp -std=c++11 ")
 
 add_executable(tts_test
                ./test/main.cpp
+               ./src/tn/glog/src/demangle.cc
+               ./src/tn/glog/src/logging.cc
+               ./src/tn/glog/src/raw_logging.cc
+               ./src/tn/glog/src/symbolize.cc
+               ./src/tn/glog/src/utilities.cc
+               ./src/tn/glog/src/vlog_is_on.cc
+               ./src/tn/glog/src/signalhandler.cc
+               ./src/tn/gflags/src/gflags.cc
+               ./src/tn/gflags/src/gflags_reporting.cc
+               ./src/tn/gflags/src/gflags_completions.cc
+               ./src/tn/openfst/src/lib/compat.cc
+               ./src/tn/openfst/src/lib/flags.cc
+               ./src/tn/openfst/src/lib/fst.cc
+               ./src/tn/openfst/src/lib/fst-types.cc
+               ./src/tn/openfst/src/lib/mapped-file.cc
+               ./src/tn/openfst/src/lib/properties.cc
+               ./src/tn/openfst/src/lib/symbol-table.cc
+               ./src/tn/openfst/src/lib/symbol-table-ops.cc
+               ./src/tn/openfst/src/lib/util.cc
+               ./src/tn/openfst/src/lib/weight.cc
+               ./src/tn/processor.cc
+               ./src/tn/token_parser.cc
+               ./src/tn/utf8_string.cc
                ./src/hz2py/hanzi2phoneid.cpp
                ./src/hz2py/Hanz2Piny.cpp
                ./src/hz2py/pinyinmap.cpp
@@ -55,5 +78,6 @@ add_executable(tts_test
                ./src/models/SynthesizerTrn.cpp)
 
 target_include_directories(tts_test PUBLIC ./eigen-3.4.0
+                                            ./src/tn/header
                                               ./include
                                               ./src/header)

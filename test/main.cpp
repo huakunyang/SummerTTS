@@ -95,7 +95,7 @@ int main(int argc, char ** argv)
     float * dataW = NULL;
     int32_t modelSize = ttsLoadModel(argv[2],&dataW);
 
-    SynthesizerTrn * synthesizer = new SynthesizerTrn(dataW);
+    SynthesizerTrn * synthesizer = new SynthesizerTrn(dataW, modelSize);
 
     int32_t spkNum = synthesizer->getSpeakerNum();
     

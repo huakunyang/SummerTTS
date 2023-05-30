@@ -15,9 +15,21 @@
 #include "random_gen.h"
 #include <Eigen/Dense>
 #include "hanzi2phoneid.h"
+#include "processor/processor.h"
+#include "utils/flags.h"
+#include <iostream>
+#include <streambuf>
 
 using Eigen::MatrixXf;
 using Eigen::Map;
+
+struct membuf : std::streambuf
+{
+    membuf(char* begin, char* end) 
+    {
+        this->setg(begin, begin, end);
+    }
+};
 
 typedef struct
 {
@@ -33,6 +45,7 @@ typedef struct
     ResidualCouplingBlock * flow_;
     Generator_base * dec_;
     MatrixXf emg_;
+    wetext::Processor * tnProcessor_;
 
 }SYN_DATA_t;
 
@@ -69,7 +82,7 @@ int32_t SynthesizerTrn::getSpeakerNum()
     return spkNum;
 }
 
-SynthesizerTrn::SynthesizerTrn(float * modelData)
+SynthesizerTrn::SynthesizerTrn(float * modelData, int32_t modelSize)
 {
     SYN_DATA_t * synData = new SYN_DATA_t();
     if(NULL == synData)
@@ -141,12 +154,32 @@ SynthesizerTrn::SynthesizerTrn(float * modelData)
         synData->emg_ = Map<MatrixXf>(modelData+offset,synData->spkNum_, synData->gin_channels_);
 
         synData->durPredicator_->setMSSpk(synData->isMS_, synData->gin_channels_);
+        offset = offset+synData->spkNum_*synData->gin_channels_;
     }
     else
     {
         synData->durPredicator_->setMSSpk(0,0);
     }
 
+    if(offset*sizeof(float)+1 < modelSize)
+    {
+        int32_t tnTaggerSize = (int32_t)modelData[offset++];
+        int32_t tnVerSize = (int32_t)modelData[offset++];
+
+        membuf sbufTagger((char *)(modelData + offset), (char *)(modelData + offset) + tnTaggerSize);
+
+        membuf sbufVerb((char *)(modelData + offset)+tnTaggerSize, (char *)(modelData + offset) + tnTaggerSize + tnVerSize);
+        offset = offset + tnVerSize;
+
+        std::istream inTagger(&sbufTagger);
+        std::istream inVerb(&sbufVerb);
+
+        synData->tnProcessor_ = new wetext::Processor(inTagger, inVerb);
+    }
+    else
+    {
+        synData->tnProcessor_ = NULL;
+    }
     priv_ = synData;
 }
 
@@ -173,8 +206,15 @@ int16_t * SynthesizerTrn::infer(const string & line, int32_t sid, float lengthSc
 {
     SYN_DATA_t * synData = (SYN_DATA_t *)priv_;
 
+    string tnString = line;
+    if(synData->tnProcessor_ != NULL)
+    {
+        string tagged_text = synData->tnProcessor_->tag(line);
+        tnString = synData->tnProcessor_->verbalize(tagged_text);
+    }
+
     int32_t strLen;
-    int32_t * strIDs = synData->hz2ID_->convert(line,strLen);
+    int32_t * strIDs = synData->hz2ID_->convert(tnString,strLen);
 
     float noiseScale = 0.0;
 
@@ -230,6 +270,7 @@ SynthesizerTrn::~SynthesizerTrn()
     delete synData->flow_;
     delete synData->dec_;
     delete synData->hz2ID_;
+    delete synData->tnProcessor_;
     delete synData;
 }
 

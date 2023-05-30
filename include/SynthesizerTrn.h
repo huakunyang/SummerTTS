@@ -9,7 +9,7 @@ using namespace std;
 class SynthesizerTrn
 {
 public:
-    SynthesizerTrn(float * modelData);
+    SynthesizerTrn(float * modelData, int32_t modelSize);
     int16_t * infer(const string & line, int32_t sid, float lengthScale, int32_t & dataLen);
     int32_t getSpeakerNum();
     ~SynthesizerTrn();

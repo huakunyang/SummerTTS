@@ -1,6 +1,6 @@
 请在如下百度网盘中下载模型并放入此目录中：
 
-链接: https://pan.baidu.com/s/1yDtOfMHwslDgVNZ1d9_kgw?pwd=berp 提取码: berp
+链接: https://pan.baidu.com/s/1hmBM_xWuFcAs4HWN_Ugl4Q?pwd=6uv6 提取码: 6uv6
 
   models/  
   ├── multi_speakers.bin  

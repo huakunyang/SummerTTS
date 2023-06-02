@@ -19,6 +19,7 @@
 #include "utils/flags.h"
 #include <iostream>
 #include <streambuf>
+#include "cppjieba/Jieba.hpp"
 
 using Eigen::MatrixXf;
 using Eigen::Map;
@@ -39,6 +40,8 @@ typedef struct
     int32_t decType_;
     int32_t spkNum_;
     int32_t gin_channels_;
+    vector<string> jieba_words_;
+    
     hanzi2phoneid * hz2ID_;
     TextEncoder * textEncoder_;
     DurationPredictor_base * durPredicator_;
@@ -46,7 +49,8 @@ typedef struct
     Generator_base * dec_;
     MatrixXf emg_;
     wetext::Processor * tnProcessor_;
-
+    cppjieba::Jieba * jieba_;
+    
 }SYN_DATA_t;
 
 typedef enum
@@ -145,7 +149,6 @@ SynthesizerTrn::SynthesizerTrn(float * modelData, int32_t modelSize)
         return;
     }
 
-    synData->hz2ID_ = new hanzi2phoneid();
 
     if(synData->isMS_ == 1)
     {
@@ -161,6 +164,8 @@ SynthesizerTrn::SynthesizerTrn(float * modelData, int32_t modelSize)
         synData->durPredicator_->setMSSpk(0,0);
     }
 
+    int32_t offset_char = offset*sizeof(float);
+    
     if(offset*sizeof(float)+1 < modelSize)
     {
         int32_t tnTaggerSize = (int32_t)modelData[offset++];
@@ -169,7 +174,15 @@ SynthesizerTrn::SynthesizerTrn(float * modelData, int32_t modelSize)
         membuf sbufTagger((char *)(modelData + offset), (char *)(modelData + offset) + tnTaggerSize);
 
         membuf sbufVerb((char *)(modelData + offset)+tnTaggerSize, (char *)(modelData + offset) + tnTaggerSize + tnVerSize);
-        offset = offset + tnVerSize;
+
+        offset_char = offset*sizeof(float) + tnTaggerSize + tnVerSize;
+
+        if(offset_char % (sizeof(float)) > 0)
+        {
+            offset_char = offset_char + (offset_char % (sizeof(float)));
+        }
+
+        offset = offset_char/sizeof(float);
 
         std::istream inTagger(&sbufTagger);
         std::istream inVerb(&sbufVerb);
@@ -180,6 +193,97 @@ SynthesizerTrn::SynthesizerTrn(float * modelData, int32_t modelSize)
     {
         synData->tnProcessor_ = NULL;
     }
+
+    if((offset_char +1) < modelSize)
+    {
+        int32_t jiebaDictSize = (int32_t)modelData[offset++];
+        int32_t jiebaHmmModelSize = (int32_t)modelData[offset++];
+        int32_t jiebaUsrdictSize = (int32_t)modelData[offset++];
+        int32_t jiebaIdfSize = (int32_t)modelData[offset++];
+        int32_t jiebaStopwordSize = (int32_t)modelData[offset++];
+        
+        membuf sbufDict((char *)(modelData + offset), (char *)(modelData + offset) + 
+                                                              jiebaDictSize);
+
+        membuf sbufModel((char *)(modelData + offset)+
+                                 jiebaDictSize, (char *)(modelData + offset) + 
+                                                jiebaDictSize + 
+                                                jiebaHmmModelSize);
+
+        membuf sbufUsrDict((char *)(modelData + offset)+
+                                   jiebaDictSize+
+                                   jiebaHmmModelSize, (char *)(modelData + offset) + 
+                                                                       jiebaDictSize + 
+                                                                       jiebaHmmModelSize +
+                                                                       jiebaUsrdictSize );
+                                                                       
+        membuf sbufIdf((char *)(modelData + offset)+
+                                jiebaDictSize +
+                                jiebaHmmModelSize+
+                                jiebaUsrdictSize,    (char *)(modelData + offset) + 
+                                                             jiebaDictSize + 
+                                                             jiebaHmmModelSize +
+                                                             jiebaUsrdictSize +
+                                                             jiebaIdfSize);
+                                                                           
+        membuf sbufStopword((char *)(modelData + offset)+
+                            jiebaDictSize+
+                            jiebaHmmModelSize+
+                            jiebaUsrdictSize+
+                            jiebaIdfSize ,    (char *)(modelData + offset) + 
+                                                jiebaDictSize + 
+                                                jiebaHmmModelSize +
+                                                jiebaUsrdictSize +
+                                                jiebaIdfSize +
+                                                jiebaStopwordSize);
+        std::istream inDict(&sbufDict);
+        std::istream inModel(&sbufModel);
+        std::istream inUsrDict(&sbufUsrDict);
+        std::istream inIdf(&sbufIdf);
+        std::istream inStopword(&sbufStopword);
+
+
+
+        synData->jieba_ = new cppjieba::Jieba(inDict, inModel,
+                                              inUsrDict, inIdf, inStopword);
+
+        offset_char = offset*sizeof(float) + jiebaDictSize + jiebaHmmModelSize + jiebaUsrdictSize + jiebaIdfSize + jiebaStopwordSize;
+
+        if(offset_char % (sizeof(float)) > 0)
+        {
+            offset_char = offset_char + (offset_char % (sizeof(float)));
+        }
+
+        offset = offset_char/sizeof(float);
+    }
+
+    if((offset_char +1) < modelSize)
+    {
+        int32_t multiPhoneWordSize = (int32_t)modelData[offset++];
+        int32_t multiPhonePinyinSize = (int32_t)modelData[offset++];
+        
+        membuf sbufMultiPhoneWords((char *)(modelData + offset), (char *)(modelData + offset) + 
+                                                                  multiPhoneWordSize);
+
+        membuf sbufMultiPhoneWordsPinyin((char *)(modelData + offset)+
+                                                    multiPhoneWordSize, (char *)(modelData + offset) + 
+                                                                        multiPhoneWordSize + 
+                                                                        multiPhonePinyinSize);
+
+        std::istream inMultiPhonewords(&sbufMultiPhoneWords);
+        std::istream inMultiPhonewordsPinyin(&sbufMultiPhoneWordsPinyin);
+        synData->hz2ID_ = new hanzi2phoneid(inMultiPhonewords,inMultiPhonewordsPinyin);
+
+        offset_char = offset*sizeof(float) + multiPhoneWordSize + multiPhonePinyinSize;
+
+        if(offset_char % (sizeof(float)) > 0)
+        {
+            offset_char = offset_char + (offset_char % (sizeof(float)));
+        }
+
+        offset = offset_char/sizeof(float);
+    }
+
     priv_ = synData;
 }
 
@@ -213,8 +317,10 @@ int16_t * SynthesizerTrn::infer(const string & line, int32_t sid, float lengthSc
         tnString = synData->tnProcessor_->verbalize(tagged_text);
     }
 
+    synData->jieba_->Cut(tnString, synData->jieba_words_, true);
+
     int32_t strLen;
-    int32_t * strIDs = synData->hz2ID_->convert(tnString,strLen);
+    int32_t * strIDs = synData->hz2ID_->convert(tnString,strLen, synData->jieba_words_);
 
     float noiseScale = 0.0;
 
@@ -271,6 +377,7 @@ SynthesizerTrn::~SynthesizerTrn()
     delete synData->dec_;
     delete synData->hz2ID_;
     delete synData->tnProcessor_;
+    delete synData->jieba_;
     delete synData;
 }
 

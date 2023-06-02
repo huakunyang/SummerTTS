@@ -8,8 +8,9 @@
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
 # 更新日志
-- 2023-5-30:  集成 WeTextProcessing 作为前端文本正则化（Text Normalization）模块，极大的改善了对数字，货币，温度，日期等的正确发音合成。需要在下面的百度网盘中获取新的模型，才能使用改进后的TN  
-  链接: https://pan.baidu.com/s/1hmBM_xWuFcAs4HWN_Ugl4Q?pwd=6uv6 提取码: 6uv6
+- 2023-06-02: 大幅度提升了多音字发音合成的准确性，需要在下面的百度网盘中获取新的模型，才能使用改善后的多音字发音和文本正则化（Text Normalization）  
+  链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
+- 2023-05-30: 集成 WeTextProcessing 作为前端文本正则化（Text Normalization）模块，极大的改善了对数字，货币，温度，日期等的正确发音合成。需要在下面的百度网盘中获取新的模型
 - 2023-5-23： 使用新的算法大幅度提升了单说话人的语音合成速度。
 - 2023-4-21： 初始创建
 
@@ -17,7 +18,7 @@
 # 使用说明
 - 将本项目的代码克隆到本地，最好是Ubuntu Linux 环境
 - 从以下的百度网盘地址下载模型，放入本项目的model目录中：
-  链接: https://pan.baidu.com/s/1hmBM_xWuFcAs4HWN_Ugl4Q?pwd=6uv6 提取码: 6uv6
+  链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
     
   模型文件放入后，models目录结构如下：    
   models/  
@@ -48,7 +49,7 @@
 
 # 后续开发
 - 后续将开放模型训练和转化脚本
-- 后续将尝试改善多音字的效果
+- 后续将尝试训练和提供音质更好的模型
 
 # 联系作者
 - 有进一步的问题或需要可以发邮件到 120365182@qq.com , 或添加微信: hwang_2011, 本人尽量回复。
@@ -64,6 +65,7 @@
 - gflags (https://github.com/gflags/gflags)
 - openfst (https://github.com/kkm000/openfst)
 - 汉字转拼音（https://github.com/yangyangwithgnu/hanz2piny）
+- cppjieba (https://github.com/yanyiwu/cppjieba)
 - 本项目的单说话人模型基于开源标贝数据集训练，多说话人模型基于开源数据集 aishell3 训练  
 
 

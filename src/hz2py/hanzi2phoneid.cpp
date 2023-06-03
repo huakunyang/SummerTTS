@@ -82,18 +82,26 @@ int32_t * hanzi2phoneid::convert(string line, int32_t & len, const vector<string
     {
         string s = jiebaWords[ii];
         
+        bool bDummyReplace = false;
+        string dummyStr="";
         for (auto iter = s.cbegin(); iter != s.cend(); NULL) 
         {
             auto iter_old = iter;
             utf8::next(iter, s.cend());
             unsigned short unicode;
             utf8::utf8to16(iter_old, iter, &unicode);
+
             if(!hanz2piny.isHanziUnicode(unicode))
             {
-                string dummy="AAA";
-                jiebaWords[ii] = dummy;
-                break;
+                bDummyReplace = true;
+                dummyStr.append("AAA");
+                //break;
             }
+        }
+        
+        if(bDummyReplace == true)
+        {
+            jiebaWords[ii] = dummyStr;
         }
     }
 

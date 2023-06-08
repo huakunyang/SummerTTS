@@ -89,9 +89,9 @@ int main(int argc, char ** argv)
     std::string sub_line;
     while(getline(utf8_ifs, sub_line))
     {
-        if (hanz2piny.isStartWithBom(line)) 
+        if (hanz2piny.isStartWithBom(sub_line)) 
         {
-            sub_line = std::string(line.cbegin() + 3, line.cend());
+            sub_line = std::string(sub_line.cbegin() + 3, sub_line.cend());
         }
         line = line + sub_line;
     }

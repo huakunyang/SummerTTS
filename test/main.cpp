@@ -85,12 +85,16 @@ int main(int argc, char ** argv)
 
     ifstream utf8_ifs(file_path);
     std::string line;
-    getline(utf8_ifs, line);
-    if (hanz2piny.isStartWithBom(line)) 
+
+    std::string sub_line;
+    while(getline(utf8_ifs, sub_line))
     {
-        line = std::string(line.cbegin() + 3, line.cend());
+        if (hanz2piny.isStartWithBom(line)) 
+        {
+            sub_line = std::string(line.cbegin() + 3, line.cend());
+        }
+        line = line + sub_line;
     }
-    
 
     float * dataW = NULL;
     int32_t modelSize = ttsLoadModel(argv[2],&dataW);

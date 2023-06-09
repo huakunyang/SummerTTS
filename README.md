@@ -27,7 +27,7 @@
   模型文件放入后，models目录结构如下：    
   models/  
   ├── multi_speakers.bin  
-  ├── single_speaker_mid.bin
+  ├── single_speaker_mid.bin  
   └── single_speaker_fast.bin  
   
 

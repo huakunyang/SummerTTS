@@ -8,6 +8,8 @@
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
 # 更新日志
+- 2023-06-09: 新增了一个中等大小的单说话人模型: single_speaker_mid.bin  ，速度比之前的模型稍慢，但合成的音质似乎要好点（本人耳朵不算敏感，感觉要好点，也许是心理作用：P ），代码不需要更新，只需要在之前的网盘中下载 single_speaker_mid.bin 并使用即可， 网盘路径：  
+  链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
 - 2023-06-08: 修改test/main.cpp, 支持换行和整篇文本的合成
 - 2023-06-03: Fix 了昨天的版本中的一个错误，感谢热心网友Telen提供测试和线索，只有代码更新，模型不需要更新。 
 - 2023-06-02: 大幅度提升了多音字发音合成的准确性，需要在下面的百度网盘中获取新的模型，才能使用改善后的多音字发音和文本正则化（Text Normalization），今天更新的代码不能使用之前的模型，否则可能导致crash，请使用下面网盘中新的模型   
@@ -25,6 +27,7 @@
   模型文件放入后，models目录结构如下：    
   models/  
   ├── multi_speakers.bin  
+  ├── single_speaker_mid.bin
   └── single_speaker_fast.bin  
   
 

@@ -1,19 +1,21 @@
 # SummerTTS 用于纪念2023年即将到来和终将逝去的夏天
 
 # 说明
-- SummerTTS 是一个独立编译的语音合成程序(TTS)。可以本地运行不需要网络，而且没有额外的依赖，一键编译完成即可用于中文语音合成。
+- SummerTTS 是一个独立编译的语音合成程序(TTS)。可以本地运行不需要网络，而且没有额外的依赖，一键编译完成即可用于中文和英文的语音合成。
 - SummerTTS 的底层计算库使用Eigen，Eigen是一套模板定义的函数，大部分情况下，只需要包含头文件即可，所以本项目没有其他依赖，在C++环境下可以独立编译和运行。
 - 本项目使用Eigen提供的矩阵库实现了神经网络的算子，不需要依赖例如pytorch，tensorflow, ncnn 等其他NN运行环境。
 - 本项目在 Ubuntu 上编译运行通过，其他类Linux平台，如Android，树莓派等，也应该没啥大问题，在Window上没有测试过，可能需要少许改动。
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
 # 更新日志
-- 2023-06-09: 新增了一个中等大小的单说话人模型: single_speaker_mid.bin  ，速度比之前的模型稍慢，但合成的音质似乎要好点（本人耳朵不算敏感，感觉要好点，也许是心理作用：P ），代码不需要更新，只需要在之前的网盘中下载 single_speaker_mid.bin 并使用即可， 网盘路径：  
+- 2023-06-15: 支持纯英文的语音合成，需要同步最新的代码，使用下列网盘中的模型文件: single_speaker_english.bin, 以下面的方式合成英文语音：  
+  ./tts_test ../test_eng.txt ../models/single_speaker_english.bin out_eng.wav  
+  网盘路径如下，之前的中文语音合成和用法不受影响，需要说明的是本次更新只支持纯英文的语音合成，中文混合英文的暂时不支持。  
   链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
+- 2023-06-09: 新增了一个中等大小的单说话人模型: single_speaker_mid.bin  ，速度比之前的模型稍慢，但合成的音质似乎要好点（本人耳朵不算敏感，感觉要好点，也许是心理作用：P ），代码不需要更新，只需要在之前的网盘中下载 single_speaker_mid.bin 并使用即可. 
 - 2023-06-08: 修改test/main.cpp, 支持换行和整篇文本的合成
 - 2023-06-03: Fix 了昨天的版本中的一个错误，感谢热心网友Telen提供测试和线索，只有代码更新，模型不需要更新。 
-- 2023-06-02: 大幅度提升了多音字发音合成的准确性，需要在下面的百度网盘中获取新的模型，才能使用改善后的多音字发音和文本正则化（Text Normalization），今天更新的代码不能使用之前的模型，否则可能导致crash，请使用下面网盘中新的模型   
-  链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
+- 2023-06-02: 大幅度提升了多音字发音合成的准确性，需要在百度网盘中获取新的模型，才能使用改善后的多音字发音和文本正则化（Text Normalization），今天更新的代码不能使用之前的模型，否则可能导致crash
 - 2023-05-30: 集成 WeTextProcessing 作为前端文本正则化（Text Normalization）模块，极大的改善了对数字，货币，温度，日期等的正确发音合成。需要在下面的百度网盘中获取新的模型
 - 2023-5-23： 使用新的算法大幅度提升了单说话人的语音合成速度。
 - 2023-4-21： 初始创建
@@ -28,6 +30,7 @@
   models/  
   ├── multi_speakers.bin  
   ├── single_speaker_mid.bin  
+  ├── single_speaker_english.bin  
   └── single_speaker_fast.bin  
   
 
@@ -35,8 +38,10 @@
   cmake ..  
   make  
 - 编译完成后，会在Build 目录中生成 tts_test 执行程序  
-- 运行下列命令，测试语音合成（TTS）：  
+- 运行下列命令，测试中文语音合成（TTS）：  
   ./tts_test ../test.txt ../models/single_speaker_fast.bin out.wav   
+- 运行下列命令，测试英文语音合成（TTS）：  
+  ./tts_test ../test_eng.txt ../models/single_speaker_english.bin out_eng.wav  
 
   该命令行中：  
   第一个参数为是文本文件的路径，该文件包含需要被合成语音的文本。  
@@ -71,7 +76,9 @@
 - openfst (https://github.com/kkm000/openfst)
 - 汉字转拼音（https://github.com/yangyangwithgnu/hanz2piny）
 - cppjieba (https://github.com/yanyiwu/cppjieba)
-- 本项目的单说话人模型基于开源标贝数据集训练，多说话人模型基于开源数据集 aishell3 训练  
+- g2p_en(https://github.com/Kyubyong/g2p)
+- English-to-IPA(https://github.com/mphilli/English-to-IPA)
+- 本项目的中文单说话人模型基于开源标贝数据集训练，多说话人模型基于开源数据集 aishell3 训练，英文单说话人模型基于LJ Speech 数据集。  
 
 
 

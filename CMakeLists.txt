@@ -33,6 +33,10 @@ add_executable(tts_test
                ./src/tn/processor.cc
                ./src/tn/token_parser.cc
                ./src/tn/utf8_string.cc
+               ./src/engipa/EnglishText2Id.cpp
+               ./src/engipa/InitIPASymbols.cpp
+               ./src/engipa/alphabet.cpp
+               ./src/engipa/ipa.cpp
                ./src/hz2py/hanzi2phoneid.cpp
                ./src/hz2py/Hanz2Piny.cpp
                ./src/hz2py/pinyinmap.cpp

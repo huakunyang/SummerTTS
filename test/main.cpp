@@ -93,7 +93,7 @@ int main(int argc, char ** argv)
         {
             sub_line = std::string(sub_line.cbegin() + 3, sub_line.cend());
         }
-        line = line + sub_line;
+        line = line + sub_line + "  ";
     }
 
     float * dataW = NULL;

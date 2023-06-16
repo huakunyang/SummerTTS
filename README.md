@@ -8,6 +8,8 @@
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
 
 # 更新日志
+- 2024-06-16: 更新添加一个更快的英文语音合成模型:single_speaker_english_fast.bin, 还是在如下网盘中，速度要快一些，合成的音质下降不明显:  
+  链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
 - 2023-06-15: 支持纯英文的语音合成，需要同步最新的代码，使用下列网盘中的模型文件: single_speaker_english.bin, 以下面的方式合成英文语音：  
   ./tts_test ../test_eng.txt ../models/single_speaker_english.bin out_eng.wav  
   网盘路径如下，之前的中文语音合成和用法不受影响，需要说明的是本次更新只支持纯英文的语音合成，中文混合英文的暂时不支持。  
@@ -30,7 +32,8 @@
   models/  
   ├── multi_speakers.bin  
   ├── single_speaker_mid.bin  
-  ├── single_speaker_english.bin  
+  ├── single_speaker_english.bin
+  ├── single_speaker_english_fast.bin  
   └── single_speaker_fast.bin  
   
 

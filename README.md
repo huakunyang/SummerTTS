@@ -32,7 +32,7 @@
   models/  
   ├── multi_speakers.bin  
   ├── single_speaker_mid.bin  
-  ├── single_speaker_english.bin
+  ├── single_speaker_english.bin  
   ├── single_speaker_english_fast.bin  
   └── single_speaker_fast.bin  
   

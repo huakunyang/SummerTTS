@@ -1,3 +1,4 @@
+#include <cstdint>
 #include "pinyinmap.h"
 
 map<string, int32_t> initPhoneIDMap()
@@ -241,7 +242,7 @@ map<uint16_t, uint16_t> initNumMap()
     numMap.insert(pair<uint16_t, uint16_t>(0x30,0x96f6));
 
     return numMap;
-    
+
 }
 
 

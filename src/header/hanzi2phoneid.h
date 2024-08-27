@@ -4,6 +4,7 @@
 #include <string>
 #include <map>
 #include <vector>
+#include <cstdint>
 
 using namespace std;
 
@@ -13,7 +14,7 @@ public:
     hanzi2phoneid(std::istream & streamWords, std::istream & streamPinyin);
     ~hanzi2phoneid();
     int32_t * convert(string line, int32_t & len, const vector<string> & jiebaWords);
-    
+
 private:
     vector<string> searchForMultiPhone(const string & word);
     void initMultiPhoneMap(std::istream & streamWords, std::istream & streamPinyin);

@@ -66,6 +66,9 @@
 
 # 联系作者
 - 有进一步的问题或需要可以发邮件到 120365182@qq.com , 或添加微信: hwang_2011, 本人尽量回复。
+  
+# License
+- 本项目适用MIT License (https://mit-license.org/)，基于本项目的开发，使用人员或机构，请遵循 MIT License (https://mit-license.org/).
 
 # 感谢
 本项目在源代码和算法方面使用了下列方案，在此表示感谢, 若可能引发任何法律问题，请及时联系我协调解决

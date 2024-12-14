@@ -6,6 +6,7 @@
 - 本项目使用Eigen提供的矩阵库实现了神经网络的算子，不需要依赖例如pytorch，tensorflow, ncnn 等其他NN运行环境。
 - 本项目在 Ubuntu 上编译运行通过，其他类Linux平台，如Android，树莓派等，也应该没啥大问题，在Window上没有测试过，可能需要少许改动。
 - 本项目的模型基于语音合成算法 vits, 在其基础上进行了基于C++的工程化
+- 本项目适用MIT License，基于本项目的开发，使用人员或机构，请遵循 MIT License: https://mit-license.org
 
 # 更新日志
 - 2024-12-14: 添加License 信息为 MIT License: https://mit-license.org

@@ -9,6 +9,7 @@
 - 本项目适用MIT License，基于本项目的开发，使用人员或机构，请遵循 MIT License: https://mit-license.org
 
 # 更新日志
+- 2025-07-10：将模型文件直接放入models 目录下，现在不用从百度网盘下载了。
 - 2024-12-14: 添加License 信息为 MIT License: https://mit-license.org
 - 2023-06-16: 更新添加一个更快的英文语音合成模型:single_speaker_english_fast.bin, 还是在如下网盘中，速度要快一些，合成的音质下降不明显:  
   链接: https://pan.baidu.com/s/1rYhtznOYQH7m8g-xZ_2VVQ?pwd=2d5h 提取码: 2d5h
